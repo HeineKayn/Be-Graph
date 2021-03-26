@@ -198,11 +198,27 @@ public class Path {
      * 
      * @return true if the path is valid, false otherwise.
      * 
-     * @deprecated Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+    	boolean res = false;
+    	int i;
+        res |= this.isEmpty();
+        res |= this.size() == 1;
+        
+        if(!res) {
+	        // Le premier arc à pour origine l'origine du path
+	        List<Arc> arcs = this.getArcs();
+	        if (arcs.get(0).getOrigin() == this.getOrigin()) {
+		        for(i=0; i < arcs.size()-1; i++) {
+		        	// La destination de i n'est pas l'origine de i+1
+		            if(arcs.get(i).getDestination() != arcs.get(i+1).getOrigin()) {
+		            	break;
+		            }
+		        }
+		        res |= i == arcs.size()-1;
+		    }
+        }
+        return res;
     }
 
     /**
