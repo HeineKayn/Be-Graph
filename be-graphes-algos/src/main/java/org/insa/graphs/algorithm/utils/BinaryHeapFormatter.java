@@ -68,7 +68,7 @@ public class BinaryHeapFormatter {
         /**
          * Creates a new context by appending a branch to this context.
          * 
-         * @param n     Number of spaces to add to the margin, or {@code null} to use
+         * @param count     Number of spaces to add to the margin, or {@code null} to use
          *              the length of the string.
          * @param label Name of the branch.
          * 
@@ -156,7 +156,7 @@ public class BinaryHeapFormatter {
      * heap.
      * 
      * @param heap       The binary heap to display.
-     * @param maxElement Maximum number of elements to display. or {@code -1} to
+     * @param max_elements Maximum number of elements to display. or {@code -1} to
      *                   display all the elements.
      * 
      * @return a string containing a sorted view the given binary heap.
