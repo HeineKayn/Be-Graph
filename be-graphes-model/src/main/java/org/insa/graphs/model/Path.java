@@ -30,13 +30,44 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
-        return new Path(graph, arcs);
+        int i,j;
+        double fastest;
+        Arc fastest_arc = null;
+        
+        // si y'a un seul noeud on utilise ce constructeur
+        if (nodes.size() == 1) {
+        	return new Path(graph, nodes.get(0));
+        }
+        // sinon on utilise un autre
+        else {
+	        // Pour chaque node
+	        for(i=0; i < nodes.size()-1; i++) {
+	        	List<Arc> successors = nodes.get(i).getSuccessors();
+	        	
+	        	// Pour chaque successeur
+	        	fastest = Double.MAX_VALUE ;
+	        	for(j=0; j < successors.size(); j++) {
+	        		// On regarde si l'arc va dans la bonne direction
+	                if(successors.get(j).getDestination() == nodes.get(i+1)) {
+	                	// Si il est le plus petit
+	                	if(successors.get(j).getMinimumTravelTime() < fastest) {
+	                		fastest = successors.get(j).getMinimumTravelTime();
+	                		fastest_arc = successors.get(j);
+	                	}
+	               }
+	            }
+	        	// Si y'a pas de plus petit c'est que y'a un soucis
+	        	if (fastest == Double.MAX_VALUE) {
+	        		throw new IllegalArgumentException();
+	        	}
+	        	arcs.add(fastest_arc);
+	        }
+	        return new Path(graph, arcs);
+        }
     }
 
     /**
@@ -50,14 +81,45 @@ public class Path {
      * 
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
-     * 
-     * @deprecated Need to be implemented.
+     *
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
-        return new Path(graph, arcs);
+        int i,j;
+        float shortest;
+        Arc shortest_arc = null;
+        
+        // si y'a un seul noeud on utilise ce constructeur
+        if (nodes.size() == 1) {
+        	return new Path(graph, nodes.get(0));
+        }
+        // sinon on utilise un autre
+        else {
+	        // Pour chaque node
+	        for(i=0; i < nodes.size()-1; i++) {
+	        	List<Arc> successors = nodes.get(i).getSuccessors();
+	        	
+	        	// Pour chaque successeur
+	        	shortest = Float.MAX_VALUE ;
+	        	for(j=0; j < successors.size(); j++) {
+	        		// On regarde si l'arc va dans la bonne direction
+	                if(successors.get(j).getDestination() == nodes.get(i+1)) {
+	                	// Si il est le plus petit
+	                	if(successors.get(j).getLength() < shortest) {
+	                		shortest = successors.get(j).getLength();
+	                		shortest_arc = successors.get(j);
+	                	}
+	               }
+	            }
+	        	// Si y'a pas de plus petit c'est que y'a un soucis
+	        	if (shortest == Float.MAX_VALUE) {
+	        		throw new IllegalArgumentException();
+	        	}
+	        	arcs.add(shortest_arc);
+	        }
+	        return new Path(graph, arcs);
+        }
     }
 
     /**
