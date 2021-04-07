@@ -24,7 +24,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     
     public List<Label> Init_Labels(){
     	List<Label> labels = new ArrayList<Label>();
-    	List<Node> nodes = this.getInputData().getGraph().getNodes();
+    	List<Node> nodes = getInputData().getGraph().getNodes();
     	for(int i=0; i < nodes.size(); i++) {
     		Node node = nodes.get(i);
     		Label newLabel = new Label(node);
