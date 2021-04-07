@@ -135,9 +135,24 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         this.percolateUp(index);
     }
 
+    // on mets à la fin et on décrémente
     @Override
     public void remove(E x) throws ElementNotFoundException {
-        // TODO:
+        
+    	// si on trouve pas erreur 
+    	int id_x = this.array.indexOf(x);
+    	if (id_x == -1 || id_x >= currentSize) {
+    		throw new ElementNotFoundException(x);
+    	}
+    	
+    	// on écrase l'élément x par le dernier :
+    	E last = this.array.get(currentSize - 1);
+    	arraySet(id_x,last);
+    	this.currentSize --;
+    	
+    	// remettre celui interverti au bon endroit
+    	percolateUp(id_x);
+    	percolateDown(id_x);
     }
 
     @Override
