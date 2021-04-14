@@ -9,7 +9,7 @@ import java.util.List;
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	
 	// pile qu'on utilise pour le dijkstra
-	public BinaryHeap<Label> tas = new BinaryHeap();
+	public BinaryHeap<Label> tas = new BinaryHeap<Label>();
 
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
@@ -28,17 +28,26 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     	this.tas.insert(x);
         
     	// Itérations
-    	boolean atteint = false;
-    	while(!this.tas.isEmpty() && !atteint) {
+    	while(!this.tas.isEmpty()) {
     		
     		// On marque le premier élément de la pile
     		x = this.tas.findMin();
     		this.tas.deleteMin();
     		x.marque = true;
     		
+    		// On s'arrête si on atteint la destination ?
+			if(x.sommet_courant == data.getDestination()) {
+				break;
+			}
+    		
     		// Pour chacun de ses successeurs 
     		for(Arc arc : x.sommet_courant.getSuccessors()) {
     			Label y = labels.get(arc.getDestination().getId());
+    			
+    			// je sais pas si c'est utile
+//    			if(arc==null) {
+//    				break;
+//    			}
     			
     			// Si il n'a pas déjà été marqué
     			if(!y.marque) {
@@ -57,10 +66,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     					catch(Exception e){
     					}
     				}
-    			}
-    			// On s'arrête si on atteint la destination ?
-    			if(x.sommet_courant == data.getDestination()) {
-    				atteint = true;
     			}
     		}
     	}
