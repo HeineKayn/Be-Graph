@@ -4,6 +4,7 @@ import org.insa.graphs.algorithm.utils.BinaryHeap;
 import org.insa.graphs.model.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
@@ -13,6 +14,16 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
+    }
+    
+    public List<Label> Init_Labels(List<Node> nodes){
+    	List<Label> labels = new ArrayList<Label>();
+    	for(int i=0; i < nodes.size(); i++) {
+    		Node node = nodes.get(i);
+    		Label newLabel = new Label(node);
+    		labels.add(node.getId(), newLabel);
+    	}
+    	return labels;
     }
 
     @Override
@@ -44,11 +55,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     		for(Arc arc : x.sommet_courant.getSuccessors()) {
     			Label y = labels.get(arc.getDestination().getId());
     			
-    			// je sais pas si c'est utile
-//    			if(arc==null) {
-//    				break;
-//    			}
-    			
     			// Si il n'a pas déjà été marqué
     			if(!y.marque) {
     				float min = Math.min(y.cout, x.cout + arc.getLength());
@@ -64,6 +70,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     						this.tas.insert(y);
     					}
     					catch(Exception e){
+    						this.tas.insert(y);
     					}
     				}
     			}
@@ -73,20 +80,20 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     }
     
     public ShortestPathSolution CreateSolution(List<Label> labels, ShortestPathData data){
-    	List<Arc> arcs = new ArrayList<Arc>();
-    	for(Label label : labels) {
-    		arcs.add(label.pere);
+    	
+    	Label y = labels.get(data.getDestination().getId());
+    	if (!y.marque) {
+    		return new ShortestPathSolution(data, AbstractSolution.Status.INFEASIBLE);
     	}
-    	return new ShortestPathSolution(data, AbstractSolution.Status.FEASIBLE, new Path(data.getGraph(),arcs));
+    	else {
+    		List<Arc> arcs = new ArrayList<Arc>();
+        	while(y.pere != null) {
+        		arcs.add(y.pere);
+        		y = labels.get(y.pere.getOrigin().getId());
+        	}
+        	Collections.reverse(arcs);
+        	return new ShortestPathSolution(data, AbstractSolution.Status.FEASIBLE, new Path(data.getGraph(),arcs));
+    	}
     }
     
-    public List<Label> Init_Labels(List<Node> nodes){
-    	List<Label> labels = new ArrayList<Label>();
-    	for(int i=0; i < nodes.size(); i++) {
-    		Node node = nodes.get(i);
-    		Label newLabel = new Label(node);
-    		labels.add(node.getId(), newLabel);
-    	}
-    	return labels;
-    }
 }

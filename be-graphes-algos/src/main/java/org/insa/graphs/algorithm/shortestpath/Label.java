@@ -28,6 +28,6 @@ public class Label implements Comparable<Label> {
 	}
 	
 	public int compareTo(Label other) {
-        return Float.compare(getCost(), other.getCost());
+        return Float.compare(this.getCost(), other.getCost());
     }
 }
