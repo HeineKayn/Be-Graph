@@ -55,8 +55,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     		for(Arc arc : x.sommet_courant.getSuccessors()) {
     			Label y = labels.get(arc.getDestination().getId());
     			
-    			// Si il n'a pas déjà été marqué
-    			if(!y.marque) {
+    			// Si il n'a pas déjà été marqué et que le chemin est possible avec le véhicule
+    			if(!y.marque && data.isAllowed(arc)) {
     				float min = Math.min(y.cout, x.cout + arc.getLength());
     				
     				// Si son cout à été mis à jour
