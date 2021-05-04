@@ -37,6 +37,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Label x = labels.get(data.getOrigin().getId());
         x.cout = 0;
     	this.tas.insert(x);
+    	this.notifyOriginProcessed(x.sommet_courant);
         
     	// Itérations
     	while(!this.tas.isEmpty()) {
@@ -45,9 +46,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     		x = this.tas.findMin();
     		this.tas.deleteMin();
     		x.marque = true;
+    		this.notifyNodeMarked(x.sommet_courant);
     		
     		// On s'arrête si on atteint la destination ?
 			if(x.sommet_courant == data.getDestination()) {
+				this.notifyDestinationReached(x.sommet_courant);
 				break;
 			}
     		
@@ -69,8 +72,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     						this.tas.remove(y);
     						this.tas.insert(y);
     					}
+    					// Il était pas encore dans le tas 
     					catch(Exception e){
     						this.tas.insert(y);
+    						this.notifyNodeReached(y.sommet_courant);
     					}
     				}
     			}
