@@ -48,6 +48,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     		x.marque = true;
     		this.notifyNodeMarked(x.sommet_courant);
     		
+    		if(!this.tas.isValid()) {
+    			System.out.println("PROBLEME");
+    		}
+    		
     		// On s'arrête si on atteint la destination ?
 			if(x.sommet_courant == data.getDestination()) {
 				this.notifyDestinationReached(x.sommet_courant);

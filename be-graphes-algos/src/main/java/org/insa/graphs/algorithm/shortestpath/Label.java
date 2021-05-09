@@ -30,4 +30,9 @@ public class Label implements Comparable<Label> {
 	public int compareTo(Label other) {
         return Float.compare(this.getCost(), other.getCost());
     }
+	
+	@Override
+    public String toString() {
+        return String.valueOf(this.getCost());
+    }
 }

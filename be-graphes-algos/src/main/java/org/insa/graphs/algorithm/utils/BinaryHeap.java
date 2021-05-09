@@ -65,6 +65,13 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     protected int indexLeft(int index) {
         return index * 2 + 1;
     }
+    
+    /**
+     * @return Index of the right child of the given index.
+     */
+    protected int indexRight(int index) {
+        return index * 2 + 2;
+    }
 
     /**
      * Internal method to percolate up in the heap.
@@ -121,6 +128,28 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     @Override
     public boolean isEmpty() {
         return this.currentSize == 0;
+    }
+    
+    public boolean isValid() {
+    	boolean res = true;
+    	
+    	for (int i = 0; i < this.size(); i++) {
+    		if(this.indexLeft(i) < this.size() && this.array.get(i).compareTo(this.array.get(this.indexLeft(i))) > 0) {
+    			res = false;
+    			System.out.print(this.array.get(i));
+    			System.out.print(">");
+    			System.out.println(this.array.get(this.indexLeft(i)));
+        		break;
+    		}
+    		if(this.indexRight(i) < this.size() && this.array.get(i).compareTo(this.array.get(this.indexRight(i))) > 0) {
+    			res = false;
+    			System.out.print(this.array.get(i));
+    			System.out.print(">");
+    			System.out.println(this.array.get(this.indexRight(i)));
+        		break;
+    		}
+    	}
+        return res;
     }
 
     @Override
