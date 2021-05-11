@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
 import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Node;
@@ -23,13 +24,19 @@ import org.insa.graphs.model.io.GraphReader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.insa.graphs.algorithm.AbstractSolution;
+import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.BellmanFordAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.Label;
+import java.util.Collections;
+import java.util.List;
+
 public class DijkstraTest {
 
     // Small graph use for tests
-    private static Graph graph, graph_toulouse, graph_europe;
+    private static Graph graph, graph_toulouse;
     
-    private static String map_toulouse = "C:\\Users\\thoma\\Documents\\GitHub\\Be-Graph\\RessourcesGraph\\Maps\\toulouse.mapgr",
-    		map_europe = "C:\\Users\\thoma\\Documents\\GitHub\\Be-Graph\\RessourcesGraph\\Maps\\europe.mapgr";
+    private static String map_toulouse = "C:\\Users\\thoma\\Documents\\GitHub\\Be-Graph\\RessourcesGraph\\Maps\\toulouse.mapgr";
 
     // List of nodes
     private static Node[] nodes;
@@ -37,21 +44,21 @@ public class DijkstraTest {
     // List of arcs in the graph, a2b is the arc from node A (0) to B (1).
     @SuppressWarnings("unused")
     private static Arc a2b, a2c, a2e, b2c, c2d_1, c2d_2, c2d_3, c2a, d2a, d2e, e2d;
-
-    // Some paths...
-    private static Path emptyPath, invalidPath, shortPath, longPath, loopPath, longLoopPath,
-    					toulouseP1, toulouseP2, toulouseP3,
-    					europeP1, europeP2;
+    
+    // Data inputed in Dijkstra
+    private static ShortestPathData shortData, invalidData, singleNodeData, emptyData, 
+    								toulouseD1, toulouseD2;
+    
+    // Result of the algorithm
+    private static Path shortPath, invalidPath, singleNodePath, emptyPath, 
+    				    toulouseP1, toulouseP2;
 
     @BeforeClass
     public static void initAll() throws IOException {
 
         // 10 and 20 meters per seconds
         RoadInformation speed10 = new RoadInformation(RoadType.MOTORWAY, null, true, 36, ""),
-                		speed20 = new RoadInformation(RoadType.MOTORWAY, null, true, 72, ""),
-                		speed0 = new RoadInformation(RoadType.MOTORWAY, null, true, 0, ""),
-        				speed10_foot = new RoadInformation(RoadType.PEDESTRIAN, null, true, 36, ""),
-        				speed20_foot = new RoadInformation(RoadType.PEDESTRIAN, null, true, 72, "");
+                		speed20 = new RoadInformation(RoadType.MOTORWAY, null, true, 72, "");
 
         // Create nodes for small graphs
         nodes = new Node[5];
@@ -61,52 +68,48 @@ public class DijkstraTest {
 
         // Add arcs...
         a2b = Node.linkNodes(nodes[0], nodes[1], 10, speed10, null);
-        a2c = Node.linkNodes(nodes[0], nodes[2], 15, speed0, null);
-        a2e = Node.linkNodes(nodes[0], nodes[4], 15, speed20_foot, null);
+        a2c = Node.linkNodes(nodes[0], nodes[2], 15, speed10, null);
+        a2e = Node.linkNodes(nodes[0], nodes[4], 15, speed20, null);
         b2c = Node.linkNodes(nodes[1], nodes[2], 10, speed10, null);
         c2d_1 = Node.linkNodes(nodes[2], nodes[3], 20, speed10, null);
-        c2d_2 = Node.linkNodes(nodes[2], nodes[3], 10, speed10_foot, null);
-        c2d_3 = Node.linkNodes(nodes[2], nodes[3], 15, speed0, null);
-        d2a = Node.linkNodes(nodes[3], nodes[0], 15, speed10_foot, null);
+        c2d_2 = Node.linkNodes(nodes[2], nodes[3], 10, speed10, null);
+        c2d_3 = Node.linkNodes(nodes[2], nodes[3], 15, speed20, null);
+        d2a = Node.linkNodes(nodes[3], nodes[0], 15, speed10, null);
         d2e = Node.linkNodes(nodes[3], nodes[4], 22.8f, speed20, null);
         e2d = Node.linkNodes(nodes[4], nodes[0], 10, speed10, null);
         
-        // Construct the 3 Graphs
+        // Construct the Graphs
         BinaryGraphReader toulouseReader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(map_toulouse))));
-        BinaryGraphReader europeReader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(map_europe))));
         graph = new Graph("ID", "", Arrays.asList(nodes), null);
         graph_toulouse = toulouseReader.read();
-		graph_europe = europeReader.read();
-		
-        // Construct the small Paths
-        emptyPath = new Path(graph, new ArrayList<Arc>());
-        shortPath = new Path(graph, Arrays.asList(new Arc[] { a2b, b2c, c2d_1 }));
-        longPath = new Path(graph, Arrays.asList(new Arc[] { a2b, b2c, c2d_1, d2e }));
-        loopPath = new Path(graph, Arrays.asList(new Arc[] { a2b, b2c, c2d_1, d2a }));
-        longLoopPath = new Path(graph,
-                Arrays.asList(new Arc[] { a2b, b2c, c2d_1, d2a, a2c, c2d_3, d2a, a2b, b2c }));
-        invalidPath = new Path(graph, Arrays.asList(new Arc[] { a2b, c2d_1, d2e }));
         
-        // ---- Construct Toulouse Paths
+        // ---- Construct Data
+        // empty ?
+        // singleNode ?
+        shortData = new ShortestPathData(graph, nodes[0], nodes[3], ArcInspectorFactory.getAllFilters().get(0));
+        invalidData = new ShortestPathData(graph, nodes[0], nodes[5], ArcInspectorFactory.getAllFilters().get(0));
         
+        // ---- Construct Toulouse Data
         // Domicile -> INSA - Voiture
-        toulouseP1 = new ShortestPathData(graph_insa, graph_insa.getNodes().get(11827), graph_insa.getNodes().get(5901), ArcInspectorFactory.getAllFilters().get(0));
+        toulouseD1 = new ShortestPathData(graph_toulouse, graph_toulouse.getNodes().get(11827), graph_toulouse.getNodes().get(5901), ArcInspectorFactory.getAllFilters().get(0));
         // INSA -> CNES - Pied
-        toulouseP2 = new ShortestPathData(graph_insa, graph_insa.getNodes().get(11574), graph_insa.getNodes().get(11081), ArcInspectorFactory.getAllFilters().get(0));
-        
-        // ---- Construct Europe Paths
-
+        toulouseD2 = new ShortestPathData(graph_toulouse, graph_toulouse.getNodes().get(11574), graph_toulouse.getNodes().get(11081), ArcInspectorFactory.getAllFilters().get(0));
+    
+        // Get path with dijkstra
+        shortPath = new DijkstraAlgorithm(shortData).run().getPath();
+        invalidPath = new DijkstraAlgorithm(invalidData).run().getPath();
+        toulouseP1 = new DijkstraAlgorithm(toulouseD1).run().getPath();
+        toulouseP2 = new DijkstraAlgorithm(toulouseD2).run().getPath();
     }
 
     @Test
     public void testConstructor() {
-        assertEquals(graph, emptyPath.getGraph());
-        assertEquals(graph, singleNodePath.getGraph());
+        //assertEquals(graph, emptyPath.getGraph());
+        //assertEquals(graph, singleNodePath.getGraph());
         assertEquals(graph, shortPath.getGraph());
-        assertEquals(graph, longPath.getGraph());
-        assertEquals(graph, loopPath.getGraph());
-        assertEquals(graph, longLoopPath.getGraph());
         assertEquals(graph, invalidPath.getGraph());
+        assertEquals(graph, toulouseP1.getGraph());
+        assertEquals(graph, toulouseP2.getGraph());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -117,7 +120,6 @@ public class DijkstraTest {
     @Test
     public void testIsEmpty() {
         assertTrue(emptyPath.isEmpty());
-
         assertFalse(singleNodePath.isEmpty());
         assertFalse(shortPath.isEmpty());
         assertFalse(longPath.isEmpty());
