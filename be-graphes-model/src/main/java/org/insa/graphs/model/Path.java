@@ -328,5 +328,14 @@ public class Path {
         }
         return cpt;
     }
+    
+    @Override
+    public String toString() {
+    	String res = String.valueOf(this.getOrigin());
+    	for(Arc arc : this.getArcs()) {
+            res += " -> " + arc.getDestination();
+         } 
+        return res;
+    }
 
 }

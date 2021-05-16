@@ -155,5 +155,10 @@ public final class Node implements Comparable<Node> {
     public int compareTo(Node other) {
         return Integer.compare(getId(), other.getId());
     }
+    
+    @Override
+    public String toString() {
+        return "node"+String.valueOf(this.getId());
+    }
 
 }

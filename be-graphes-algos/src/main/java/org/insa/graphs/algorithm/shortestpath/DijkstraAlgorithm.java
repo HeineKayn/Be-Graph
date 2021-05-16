@@ -1,4 +1,5 @@
 package org.insa.graphs.algorithm.shortestpath;
+import org.insa.graphs.algorithm.AbstractInputData;
 import org.insa.graphs.algorithm.AbstractSolution;
 import org.insa.graphs.algorithm.utils.BinaryHeap;
 import org.insa.graphs.model.*;
@@ -16,10 +17,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
     }
     
-    public List<Label> Init_Labels(List<Node> nodes){
+    public List<Label> Init_Labels(ShortestPathData data){
     	List<Label> labels = new ArrayList<Label>();
-    	for(int i=0; i < nodes.size(); i++) {
-    		Node node = nodes.get(i);
+    	for(int i=0; i < data.getGraph().getNodes().size(); i++) {
+    		Node node = data.getGraph().getNodes().get(i);
     		Label newLabel = new Label(node);
     		labels.add(node.getId(), newLabel);
     	}
@@ -31,7 +32,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         final ShortestPathData data = getInputData();
 
         // Initialisation du tableau de label
-        List<Label> labels = Init_Labels(data.getGraph().getNodes());
+        List<Label> labels = Init_Labels(data);
         
         // Initialisation du premier point
         Label x = labels.get(data.getOrigin().getId());
@@ -52,7 +53,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     			System.out.println("PROBLEME");
     		}
     		
-    		// On s'arrête si on atteint la destination ?
+    		// On s'arrête si on atteint la destination
 			if(x.sommet_courant == data.getDestination()) {
 				this.notifyDestinationReached(x.sommet_courant);
 				break;
@@ -64,7 +65,15 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     			
     			// Si il n'a pas déjà été marqué et que le chemin est possible avec le véhicule
     			if(!y.marque && data.isAllowed(arc)) {
-    				float min = Math.min(y.cout, x.cout + arc.getLength());
+    				
+    				float min; 
+    				
+    				if (data.getMode() == AbstractInputData.Mode.LENGTH) {
+    					min = Math.min(y.cout, x.cout + arc.getLength());
+    				}
+    				else {
+    					min = (float)Math.min(y.cout, x.cout + arc.getMinimumTravelTime());
+    				}
     				
     				// Si son cout à été mis à jour
     				if (y.cout != min) {
