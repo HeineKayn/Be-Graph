@@ -27,6 +27,15 @@ public class Label implements Comparable<Label> {
 		return this.cout;
 	}
 	
+	public float minLabel(Label other, float distArc) {
+		if (this.getCost() < other.getCost() + distArc) {
+			return this.getCost();
+		}
+		else {
+			return other.getCost() + distArc;
+		}
+    }
+	
 	public int compareTo(Label other) {
         return Float.compare(this.getCost(), other.getCost());
     }

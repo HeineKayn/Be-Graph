@@ -11,6 +11,15 @@ public class LabelStar extends Label {
 		this.estim = Float.MAX_VALUE;
 	}
 	
+	public float minLabel(LabelStar other, float distArc) {
+		if (this.getCost()+this.estim < other.getCost() + other.estim + distArc) {
+			return this.getCost();
+		}
+		else {
+			return other.getCost() + distArc;
+		}
+    }
+	
 	public int compareTo(LabelStar other) {
         return Float.compare(this.getCost()+this.estim, other.getCost()+other.estim);
     }

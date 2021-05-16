@@ -12,19 +12,20 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	
 	// pile qu'on utilise pour le dijkstra
 	public BinaryHeap<Label> tas = new BinaryHeap<Label>();
+	
+	// liste des labels
+	public List<Label> labels = new ArrayList<Label>();
 
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
     }
     
-    public List<Label> Init_Labels(ShortestPathData data){
-    	List<Label> labels = new ArrayList<Label>();
+    public void Init_Labels(ShortestPathData data){
     	for(int i=0; i < data.getGraph().getNodes().size(); i++) {
     		Node node = data.getGraph().getNodes().get(i);
     		Label newLabel = new Label(node);
-    		labels.add(node.getId(), newLabel);
+    		this.labels.add(node.getId(), newLabel);
     	}
-    	return labels;
     }
 
     @Override
@@ -32,7 +33,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         final ShortestPathData data = getInputData();
 
         // Initialisation du tableau de label
-        List<Label> labels = Init_Labels(data);
+        this.Init_Labels(data);
         
         // Initialisation du premier point
         Label x = labels.get(data.getOrigin().getId());
@@ -69,10 +70,12 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     				float min; 
     				
     				if (data.getMode() == AbstractInputData.Mode.LENGTH) {
-    					min = Math.min(y.cout, x.cout + arc.getLength());
+    					min = y.minLabel(x, arc.getLength());
+    					// min = Math.min(y.cout, x.cout + arc.getLength());
     				}
     				else {
-    					min = (float)Math.min(y.cout, x.cout + arc.getMinimumTravelTime());
+    					min = y.minLabel(x, (float)arc.getMinimumTravelTime());
+    					//min = (float)Math.min(y.cout, x.cout + arc.getMinimumTravelTime());
     				}
     				
     				// Si son cout à été mis à jour
