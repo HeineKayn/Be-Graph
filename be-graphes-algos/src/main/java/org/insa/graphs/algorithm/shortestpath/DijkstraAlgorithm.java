@@ -95,9 +95,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     				}
     			}
     		}
-    		System.out.print("Cout label marqué : " + x.getCost() + "\n");
-    		System.out.print("Nombre de successeurs du sommet : " + nb_succ + "\n");
-			System.out.print("Le tas est toujours valide ?  " + this.tas.isValid() + "\n");
+//    		System.out.print("Cout label marqué : " + x.getCost() + "\n");
+//    		System.out.print("Nombre de successeurs du sommet : " + nb_succ + "\n");
+//			System.out.print("Le tas est toujours valide ?  " + this.tas.isValid() + "\n");
 			nb_succ = 0;
     	}
     	ShortestPathSolution sol = CreateSolution(labels,data);
