@@ -26,6 +26,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     		Label newLabel = new Label(node);
     		this.labels.add(node.getId(), newLabel);
     	}
+        // Initialisation du premier point
+        Label x = labels.get(data.getOrigin().getId());
+        this.notifyOriginProcessed(x.sommet_courant);
+        x.cout = 0;
+    	this.tas.insert(x);
     }
 
     @Override
@@ -35,17 +40,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         // Initialisation du tableau de label
         this.Init_Labels(data);
         
-        // Initialisation du premier point
-        Label x = labels.get(data.getOrigin().getId());
-        x.cout = 0;
-    	this.tas.insert(x);
-    	this.notifyOriginProcessed(x.sommet_courant);
-        
     	// Itérations
     	while(!this.tas.isEmpty()) {
     		
     		// On marque le premier élément de la pile
-    		x = this.tas.findMin();
+    		Label x = this.tas.findMin();
     		this.tas.deleteMin();
     		x.marque = true;
     		this.notifyNodeMarked(x.sommet_courant);
@@ -62,20 +61,21 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     		
     		// Pour chacun de ses successeurs 
     		for(Arc arc : x.sommet_courant.getSuccessors()) {
+    			
+    			// ici on a un problème -> Comment adapter à ce que ça soit un LabelStar
     			Label y = labels.get(arc.getDestination().getId());
     			
     			// Si il n'a pas déjà été marqué et que le chemin est possible avec le véhicule
     			if(!y.marque && data.isAllowed(arc)) {
+    				float min = y.cout; 
     				
-    				float min; 
-    				
+    				// Si on est en mode DISTANCE
     				if (data.getMode() == AbstractInputData.Mode.LENGTH) {
     					min = y.minLabel(x, arc.getLength());
-    					// min = Math.min(y.cout, x.cout + arc.getLength());
     				}
+    				// Si on est en mode TEMPS
     				else {
     					min = y.minLabel(x, (float)arc.getMinimumTravelTime());
-    					//min = (float)Math.min(y.cout, x.cout + arc.getMinimumTravelTime());
     				}
     				
     				// Si son cout à été mis à jour

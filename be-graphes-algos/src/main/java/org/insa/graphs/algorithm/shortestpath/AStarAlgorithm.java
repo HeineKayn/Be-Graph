@@ -1,5 +1,4 @@
 package org.insa.graphs.algorithm.shortestpath;
-
 import org.insa.graphs.algorithm.AbstractInputData;
 import org.insa.graphs.model.Node;
 
@@ -22,5 +21,10 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
 			}
     		this.labels.add(node.getId(), newLabel);
     	}
+    	// Initialisation du premier point
+        LabelStar x = (LabelStar)this.labels.get(data.getOrigin().getId());
+        this.notifyOriginProcessed(x.sommet_courant);
+        x.cout = 0;
+    	this.tas.insert(x);
     }
 }
