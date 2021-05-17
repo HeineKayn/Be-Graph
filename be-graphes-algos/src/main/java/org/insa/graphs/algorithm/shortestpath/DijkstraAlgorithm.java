@@ -101,7 +101,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			nb_succ = 0;
     	}
     	ShortestPathSolution sol = CreateSolution(labels,data);
-    	System.out.print("Le chemin solution est valide ?  " + sol.getPath().isValid() + "\n");
+    	//System.out.print("Le chemin solution est valide ?  " + sol.getPath().isValid() + "\n");
         return sol;
     }
     
