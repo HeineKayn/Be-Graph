@@ -40,6 +40,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         // Initialisation du tableau de label
         this.Init_Labels(data);
         
+        int nb_succ = 0;
+        
     	// Itérations
     	while(!this.tas.isEmpty()) {
     		
@@ -48,10 +50,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     		this.tas.deleteMin();
     		x.marque = true;
     		this.notifyNodeMarked(x.sommet_courant);
-    		
-    		if(!this.tas.isValid()) {
-    			System.out.println("PROBLEME");
-    		}
     		
     		// On s'arrête si on atteint la destination
 			if(x.sommet_courant == data.getDestination()) {
@@ -64,6 +62,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     			
     			// ici on a un problème -> Comment adapter à ce que ça soit un LabelStar
     			Label y = labels.get(arc.getDestination().getId());
+    			nb_succ ++;
     			
     			// Si il n'a pas déjà été marqué et que le chemin est possible avec le véhicule
     			if(!y.marque && data.isAllowed(arc)) {
@@ -96,6 +95,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     				}
     			}
     		}
+    		System.out.print("Cout label marqué : " + x.getCost() + "\n");
+    		System.out.print("Nombre de successeurs du sommet : " + nb_succ + "\n");
+			System.out.print("Le tas est toujours valide? :  " + this.tas.isValid() + "\n");
+			nb_succ = 0;
     	}
         return CreateSolution(labels,data);
     }
