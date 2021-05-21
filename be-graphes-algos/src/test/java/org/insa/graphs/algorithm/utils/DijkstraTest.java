@@ -10,6 +10,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.insa.graphs.algorithm.ArcInspectorFactory;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
@@ -17,6 +18,7 @@ import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
+import org.insa.graphs.model.Point;
 import org.insa.graphs.model.RoadInformation;
 import org.insa.graphs.model.RoadInformation.RoadType;
 import org.insa.graphs.model.io.BinaryGraphReader;
@@ -59,7 +61,8 @@ public class DijkstraTest {
         // Create nodes for small graphs
         nodes = new Node[6];
         for (int i = 0; i < nodes.length; ++i) {
-            nodes[i] = new Node(i, null);
+        	nodes[i] = new Node(i, 
+        			new Point(ThreadLocalRandom.current().nextFloat()*10,ThreadLocalRandom.current().nextFloat()*10));
         }
 
         // Add arcs...

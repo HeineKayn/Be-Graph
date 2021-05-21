@@ -10,13 +10,17 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
+import org.insa.graphs.algorithm.AbstractInputData;
 import org.insa.graphs.algorithm.ArcInspectorFactory;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
 import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
+import org.insa.graphs.model.Point;
 import org.insa.graphs.model.RoadInformation;
 import org.insa.graphs.model.RoadInformation.RoadType;
 import org.insa.graphs.model.io.BinaryGraphReader;
@@ -24,15 +28,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.AStarAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.BellmanFordAlgorithm;
 
 public class ShortestAlgosTest {
-
+	
+	private static String toulouse_map = "C:\\Users\\thoma\\Documents\\GitHub\\Be-Graph\\RessourcesGraph\\Maps\\toulouse.mapgr";
+	private static String midipy_map = "C:\\Users\\thoma\\Documents\\GitHub\\Be-Graph\\RessourcesGraph\\Maps\\midi-pyrenees.mapgr";
+	
     // Small graph use for tests
-    private static Graph graph, graph_toulouse;
+    private static Graph graph;
     
-    private static String map_toulouse = "C:\\Users\\thoma\\Documents\\GitHub\\Be-Graph\\RessourcesGraph\\Maps\\toulouse.mapgr";
-
     // List of nodes
     private static Node[] nodes;
 
@@ -41,14 +47,10 @@ public class ShortestAlgosTest {
     private static Arc a2b, a2c, a2e, b2c, c2d_1, c2d_2, c2d_3, c2a, d2a, d2e, e2d;
     
     // Data inputed in Dijkstra
-    private static ShortestPathData shortData, invalidData, 
-    								toulouseD1_voiture, toulouseD1_pied,
-    								toulouseD2_voiture, toulouseD2_pied;
+    private static ShortestPathData shortData, invalidData;
     
     // Result of the algorithm
-    private static Path invalidDij, shortDij, toulouseDij1_voiture, toulouseDij1_pied, toulouseDij2_voiture, toulouseDij2_pied,
-    					invalidA, shortA, toulouseA1_voiture, toulouseA1_pied, toulouseA2_voiture, toulouseA2_pied,
-    					shortSol, toulouseS1_voiture, toulouseS1_pied, toulouseS2_voiture, toulouseS2_pied;
+    private static Path shortSol, invalidDij, shortDij, invalidA, shortA;
 
     @BeforeClass
     public static void initAll() throws IOException {
@@ -60,7 +62,8 @@ public class ShortestAlgosTest {
         // Create nodes for small graphs
         nodes = new Node[6];
         for (int i = 0; i < nodes.length; ++i) {
-            nodes[i] = new Node(i, null);
+        	nodes[i] = new Node(i, 
+        			new Point(ThreadLocalRandom.current().nextFloat()*10,ThreadLocalRandom.current().nextFloat()*10));
         }
 
         // Add arcs...
@@ -76,145 +79,143 @@ public class ShortestAlgosTest {
         e2d = Node.linkNodes(nodes[4], nodes[0], 10, speed10, null);
         
         // Construct the Graphs
-        BinaryGraphReader toulouseReader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(map_toulouse))));
         graph = new Graph("ID", "", Arrays.asList(nodes), null);
-        graph_toulouse = toulouseReader.read();
         
         // ---- Construct Data
         shortData = new ShortestPathData(graph, nodes[0], nodes[3], ArcInspectorFactory.getAllFilters().get(0));
         invalidData = new ShortestPathData(graph, nodes[0], nodes[5], ArcInspectorFactory.getAllFilters().get(0));
         
-        // ---- Construct Toulouse Data
-        // Domicile -> INSA - Voiture
-        toulouseD1_voiture = new ShortestPathData(graph_toulouse, graph_toulouse.getNodes().get(11827), graph_toulouse.getNodes().get(5901), ArcInspectorFactory.getAllFilters().get(0));
-        toulouseD1_pied = new ShortestPathData(graph_toulouse, graph_toulouse.getNodes().get(11827), graph_toulouse.getNodes().get(5901), ArcInspectorFactory.getAllFilters().get(2));
-        
-        // INSA -> CNES - Pied
-        toulouseD2_voiture = new ShortestPathData(graph_toulouse, graph_toulouse.getNodes().get(11574), graph_toulouse.getNodes().get(11081), ArcInspectorFactory.getAllFilters().get(0));
-        toulouseD2_pied = new ShortestPathData(graph_toulouse, graph_toulouse.getNodes().get(11574), graph_toulouse.getNodes().get(11081), ArcInspectorFactory.getAllFilters().get(2));
-        
         // Get path with Dijkstra
         shortDij = new DijkstraAlgorithm(shortData).run().getPath();
         invalidDij = new DijkstraAlgorithm(invalidData).run().getPath();
-        toulouseDij1_pied = new DijkstraAlgorithm(toulouseD1_pied).run().getPath();
-        toulouseDij1_voiture = new DijkstraAlgorithm(toulouseD1_voiture).run().getPath();
-        toulouseDij2_pied = new DijkstraAlgorithm(toulouseD2_pied).run().getPath();
-        toulouseDij2_voiture = new DijkstraAlgorithm(toulouseD2_voiture).run().getPath();
         
         // Get path with A*
         shortA = new DijkstraAlgorithm(shortData).run().getPath();
         invalidA = new DijkstraAlgorithm(invalidData).run().getPath();
-        toulouseA1_pied = new DijkstraAlgorithm(toulouseD1_pied).run().getPath();
-        toulouseA1_voiture = new DijkstraAlgorithm(toulouseD1_voiture).run().getPath();
-        toulouseA2_pied = new DijkstraAlgorithm(toulouseD2_pied).run().getPath();
-        toulouseA2_voiture = new DijkstraAlgorithm(toulouseD2_voiture).run().getPath();
         
         // Get path with BellmanFord
         shortSol = new BellmanFordAlgorithm(shortData).run().getPath();
-        toulouseS1_pied = new BellmanFordAlgorithm(toulouseD1_pied).run().getPath();
-        toulouseS1_voiture = new BellmanFordAlgorithm(toulouseD1_voiture).run().getPath();
-        toulouseS2_pied = new BellmanFordAlgorithm(toulouseD2_pied).run().getPath();
-        toulouseS2_voiture = new BellmanFordAlgorithm(toulouseD2_voiture).run().getPath();
     }
 
     @Test
     public void testIsEmpty() {
         assertFalse(shortDij.isEmpty());
-        assertFalse(toulouseDij1_voiture.isEmpty());
-        assertFalse(toulouseDij1_pied.isEmpty());
-        assertFalse(toulouseDij2_voiture.isEmpty());
-        assertFalse(toulouseDij2_pied.isEmpty());
-    }
-
-    // cout plutot
-    @Test
-    public void testSize() {
-        
-        // Dijkstra
-        assertEquals(shortSol.size(), shortDij.size());
-        assertEquals(toulouseS1_pied.size(), toulouseDij1_pied.size());
-        assertEquals(toulouseS1_voiture.size(), toulouseDij1_voiture.size());
-        assertEquals(toulouseS2_pied.size(), toulouseDij2_pied.size());
-        assertEquals(toulouseS2_voiture.size(), toulouseDij2_voiture.size());
-
-        // A*
-        assertEquals(shortSol.size(), shortA.size());
-        assertEquals(toulouseS1_pied.size(), toulouseA1_pied.size());
-        assertEquals(toulouseS1_voiture.size(), toulouseA1_voiture.size());
-        assertEquals(toulouseS2_pied.size(), toulouseA2_pied.size());
-        assertEquals(toulouseS2_voiture.size(), toulouseA2_voiture.size());
     }
 
     @Test
     public void testIsValid() {
-        
         // Dijkstra
         assertNull(invalidDij);
         assertTrue(shortDij.isValid());
-        assertTrue(toulouseDij1_voiture.isValid());
-        assertTrue(toulouseDij1_pied.isValid());
-        assertTrue(toulouseDij2_voiture.isValid());
-        assertTrue(toulouseDij2_pied.isValid());
         
         // A*
         assertNull(invalidA);
-        assertTrue(shortA.isValid());
-        assertTrue(toulouseA1_voiture.isValid());
-        assertTrue(toulouseA1_pied.isValid());
-        assertTrue(toulouseA2_voiture.isValid());
-        assertTrue(toulouseA2_pied.isValid());
-        
+        assertTrue(shortA.isValid()); 
     }
 
     @Test
     public void testGetLength() {
-    	
-    	// Dijkstra
         assertEquals(shortSol.getLength(), shortDij.getLength(), 1e-6);
-        assertEquals(toulouseS1_pied.getLength(), toulouseDij1_pied.getLength(), 1e-6);
-        assertEquals(toulouseS1_voiture.getLength(), toulouseDij1_voiture.getLength(), 1e-6);
-        assertEquals(toulouseS2_pied.getLength(), toulouseDij2_pied.getLength(), 1e-6);
-        assertEquals(toulouseS2_voiture.getLength(), toulouseDij2_voiture.getLength(), 1e-6);
-
-        // A*
         assertEquals(shortSol.getLength(), shortA.getLength(), 1e-6);
-        assertEquals(toulouseS1_pied.getLength(), toulouseA1_pied.getLength(), 1e-6);
-        assertEquals(toulouseS1_voiture.getLength(), toulouseA1_voiture.getLength(), 1e-6);
-        assertEquals(toulouseS2_pied.getLength(), toulouseA2_pied.getLength(), 1e-6);
-        assertEquals(toulouseS2_voiture.getLength(), toulouseA2_voiture.getLength(), 1e-6);
     }
 
     @Test
     public void testGetTravelTime() {
     	
         // Note: 18 km/h = 5m/s
-    	// Dijkstra
         assertEquals(shortSol.getTravelTime(18), shortDij.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS1_pied.getTravelTime(18), toulouseDij1_pied.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS1_voiture.getTravelTime(18), toulouseDij1_voiture.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS2_pied.getTravelTime(18), toulouseDij2_pied.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS2_voiture.getTravelTime(18), toulouseDij2_voiture.getTravelTime(18), 1e-6);
-
-        // A*
         assertEquals(shortSol.getTravelTime(18), shortA.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS1_pied.getTravelTime(18), toulouseA1_pied.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS1_voiture.getTravelTime(18), toulouseA1_voiture.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS2_pied.getTravelTime(18), toulouseA2_pied.getTravelTime(18), 1e-6);
-        assertEquals(toulouseS2_voiture.getTravelTime(18), toulouseA2_voiture.getTravelTime(18), 1e-6);
 
         // Note: 28.8 km/h = 8m/s
-        // Dijkstra
         assertEquals(shortSol.getTravelTime(28.8), shortDij.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS1_pied.getTravelTime(28.8), toulouseDij1_pied.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS1_voiture.getTravelTime(28.8), toulouseDij1_voiture.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS2_pied.getTravelTime(28.8), toulouseDij2_pied.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS2_voiture.getTravelTime(28.8), toulouseDij2_voiture.getTravelTime(28.8), 1e-6);
-
-        // A*
         assertEquals(shortSol.getTravelTime(28.8), shortA.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS1_pied.getTravelTime(28.8), toulouseA1_pied.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS1_voiture.getTravelTime(28.8), toulouseA1_voiture.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS2_pied.getTravelTime(28.8), toulouseA2_pied.getTravelTime(28.8), 1e-6);
-        assertEquals(toulouseS2_voiture.getTravelTime(28.8), toulouseA2_voiture.getTravelTime(28.8), 1e-6);
     }
+    @Test
+    public void testRandomToulouse() throws IOException {
+    	int i = 0;
+    	while(i<50) {
+    		BinaryGraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(toulouse_map))));
+    		Graph graph = reader.read();
+    		Random rand = new Random();
+    		ShortestPathData shortdata = new ShortestPathData(graph, 
+    				graph.getNodes().get(rand.nextInt(graph.size())), 
+    				graph.getNodes().get(rand.nextInt(graph.size())), 
+    				ArcInspectorFactory.getAllFilters().get(rand.nextInt(5)));
+    		
+    		Path sol = new BellmanFordAlgorithm(shortData).run().getPath();
+    		if(sol.isValid()) {
+    			i++;
+    			
+    			Path dij = new DijkstraAlgorithm(shortData).run().getPath();
+    			Path astar = new AStarAlgorithm(shortData).run().getPath();
+    			
+    			// Test d'empty
+    			assertFalse(dij.isEmpty());
+    			assertFalse(astar.isEmpty());
+    			
+    			// Test de validité
+    	        assertTrue(dij.isValid());
+    	        assertTrue(astar.isValid()); 
+    	        
+    	        // Test de distance
+    	        if (shortdata.getMode() == AbstractInputData.Mode.LENGTH) {
+    	        	assertEquals(sol.getLength(), dij.getLength(), 1e-6);
+        	        assertEquals(sol.getLength(), astar.getLength(), 1e-6);
+    	        }
+    	        
+    	        // Test de temps 
+    	        else{
+    	        	// Note: 18 km/h = 5m/s
+    	            assertEquals(sol.getTravelTime(18), dij.getTravelTime(18), 1e-6);
+    	            assertEquals(sol.getTravelTime(18), astar.getTravelTime(18), 1e-6);
+
+    	            // Note: 28.8 km/h = 8m/s
+    	            assertEquals(sol.getTravelTime(28.8), dij.getTravelTime(28.8), 1e-6);
+    	            assertEquals(sol.getTravelTime(28.8), astar.getTravelTime(28.8), 1e-6);
+    	        }
+    		}
+    	}
+    }
+	@Test
+	public void testRandomMidiPy() throws IOException {
+		int i = 0;
+		while(i<5) {
+			BinaryGraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(midipy_map))));
+			Graph graph = reader.read();
+			Random rand = new Random();
+			ShortestPathData shortdata = new ShortestPathData(graph, 
+					graph.getNodes().get(rand.nextInt(graph.size())), 
+					graph.getNodes().get(rand.nextInt(graph.size())), 
+					ArcInspectorFactory.getAllFilters().get(rand.nextInt(5)));
+			
+			Path dij = new DijkstraAlgorithm(shortData).run().getPath();
+			if(dij.isValid()) {
+				i++;
+				
+				Path astar = new AStarAlgorithm(shortData).run().getPath();
+				
+				// Test d'empty
+				assertFalse(dij.isEmpty());
+				assertFalse(astar.isEmpty());
+				
+				// Test de validité
+		        assertTrue(dij.isValid());
+		        assertTrue(astar.isValid()); 
+		        
+		        // Test de distance
+		        if (shortdata.getMode() == AbstractInputData.Mode.LENGTH) {
+		        	assertEquals(astar.getLength(), dij.getLength(), 1e-6);
+		        }
+		        
+		        // Test de temps 
+		        else{
+		        	// Note: 18 km/h = 5m/s
+		            assertEquals(astar.getTravelTime(18), dij.getTravelTime(18), 1e-6);
+	
+		            // Note: 28.8 km/h = 8m/s
+		            assertEquals(astar.getTravelTime(28.8), dij.getTravelTime(28.8), 1e-6);
+		        }
+			}
+		}
+	}
 }

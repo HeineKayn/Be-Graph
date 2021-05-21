@@ -282,6 +282,7 @@ public class Path {
         }
         return res;
     }
+    
 
     /**
      * Compute the length of this path (in meters).
