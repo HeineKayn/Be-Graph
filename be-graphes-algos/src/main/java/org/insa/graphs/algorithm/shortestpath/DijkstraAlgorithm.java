@@ -66,32 +66,20 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     			
     			// Si il n'a pas déjà été marqué et que le chemin est possible avec le véhicule
     			if(!y.marque && data.isAllowed(arc)) {
-    				float min = y.cout; 
-    				
-    				// Si on est en mode DISTANCE
-    				if (data.getMode() == AbstractInputData.Mode.LENGTH) {
-    					min = y.minLabel(x, arc.getLength());
-    				}
-    				// Si on est en mode TEMPS
-    				else {
-    					min = y.minLabel(x, (float)arc.getMinimumTravelTime());
-    				}
+    				double min = Math.min(y.getCost(), x.getCost() + data.getCost(arc)); 
     				
     				// Si son cout à été mis à jour
-    				if (y.cout != min) {
-    					y.cout = min;
-    					y.pere = arc;
+    				if (y.cout > min) {
     					
     					// On update
-    					try {
-    						this.tas.remove(y);
-    						this.tas.insert(y);
+    					if (y.cout < Double.MAX_VALUE) {
+    						this.tas.remove(y);		
     					}
-    					// Il était pas encore dans le tas 
-    					catch(Exception e){
-    						this.tas.insert(y);
-    						this.notifyNodeReached(y.sommet_courant);
-    					}
+    					
+    					y.cout = min;
+    					y.pere = arc;
+    					this.tas.insert(y);
+    					//this.notifyNodeReached(y.sommet_courant);
     				}
     			}
     		}

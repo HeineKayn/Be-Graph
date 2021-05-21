@@ -11,7 +11,7 @@ public class Label implements Comparable<Label> {
 	public Boolean marque;
 	
 	// Valeur courante du plus court chemin depuis l'origine vers le sommet
-	public float cout;
+	public double cout;
 	
 	// Correspond au sommet précédent sur le chemin qui correspond au plus court chemin courant
 	public Arc pere;
@@ -19,21 +19,17 @@ public class Label implements Comparable<Label> {
 	public Label(Node courant) {
 		this.sommet_courant = courant;
 		this.marque = false ;
-		this.cout = Float.MAX_VALUE ;
+		this.cout = Double.MAX_VALUE ;
 		this.pere = null;
 	}
 	
-	public float getCost() {
+	public double getCost() {
 		return this.cout;
 	}
 	
-	public float getScore() {
+	public double getScore() {
 		return this.cout;
 	}
-	
-	public float minLabel(Label other, float val) {
-		return Math.min(this.getScore(),other.getScore()+val);
-    }
 	
 	@Override
     public String toString() {
@@ -41,6 +37,6 @@ public class Label implements Comparable<Label> {
     }
 	
 	public int compareTo(Label other) {
-        return (int)(this.getCost()-other.getCost());
+        return (int)(this.getScore()-other.getScore());
     }
 }

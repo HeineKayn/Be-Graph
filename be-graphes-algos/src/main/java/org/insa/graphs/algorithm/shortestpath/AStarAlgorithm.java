@@ -14,10 +14,14 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
     		LabelStar newLabel = new LabelStar(node);	
     		
     		if (data.getMode() == AbstractInputData.Mode.LENGTH) {
-    			newLabel.estim = (float)newLabel.sommet_courant.getPoint().distanceTo(data.getDestination().getPoint());
+    			newLabel.estim = newLabel.sommet_courant.getPoint().distanceTo(data.getDestination().getPoint());
 			}
 			else {
-				newLabel.estim = (float)newLabel.sommet_courant.getPoint().distanceTo(data.getDestination().getPoint()) / data.getGraph().getGraphInformation().getMaximumSpeed();
+				double speed = data.getMaximumSpeed()*3.6;
+				if(speed < 0) {
+					speed = data.getGraph().getGraphInformation().getMaximumSpeed()*3.6;
+				}
+				newLabel.estim = newLabel.sommet_courant.getPoint().distanceTo(data.getDestination().getPoint()) / speed;
 			}
     		this.labels.add(node.getId(), newLabel);
     	}

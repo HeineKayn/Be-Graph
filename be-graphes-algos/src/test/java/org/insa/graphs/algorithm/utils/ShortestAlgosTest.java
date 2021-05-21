@@ -126,6 +126,7 @@ public class ShortestAlgosTest {
         assertFalse(toulouseDij2_pied.isEmpty());
     }
 
+    // cout plutot
     @Test
     public void testSize() {
         
@@ -215,22 +216,5 @@ public class ShortestAlgosTest {
         assertEquals(toulouseS1_voiture.getTravelTime(28.8), toulouseA1_voiture.getTravelTime(28.8), 1e-6);
         assertEquals(toulouseS2_pied.getTravelTime(28.8), toulouseA2_pied.getTravelTime(28.8), 1e-6);
         assertEquals(toulouseS2_voiture.getTravelTime(28.8), toulouseA2_voiture.getTravelTime(28.8), 1e-6);
-    }
-
-    @Test
-    public void testGetMinimumTravelTime() {
-    	// Dijkstra
-        assertEquals(shortSol.getMinimumTravelTime(), shortDij.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS1_pied.getMinimumTravelTime(), toulouseDij1_pied.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS1_voiture.getMinimumTravelTime(), toulouseDij1_voiture.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS2_pied.getMinimumTravelTime(), toulouseDij2_pied.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS2_voiture.getMinimumTravelTime(), toulouseDij2_voiture.getMinimumTravelTime(), 1e-4);
-
-        // A*
-        assertEquals(shortSol.getMinimumTravelTime(), shortA.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS1_pied.getMinimumTravelTime(), toulouseA1_pied.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS1_voiture.getMinimumTravelTime(), toulouseA1_voiture.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS2_pied.getMinimumTravelTime(), toulouseA2_pied.getMinimumTravelTime(), 1e-4);
-        assertEquals(toulouseS2_voiture.getMinimumTravelTime(), toulouseA2_voiture.getMinimumTravelTime(), 1e-4);
     }
 }
