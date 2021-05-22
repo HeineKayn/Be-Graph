@@ -118,7 +118,7 @@ public abstract class ShortestAlgosTest {
     @Test
     public void testAvecOracle() throws IOException {
     	int i = 0;
-    	while(i<50) {
+    	while(i<30) {
     		BinaryGraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(toulouse_map))));
     		Graph graph = reader.read();
     		Random rand = new Random();
@@ -134,7 +134,8 @@ public abstract class ShortestAlgosTest {
     		}
 			i++;
 			
-			Path path = createAlgorithm(data).run().getPath();
+			ShortestPathAlgorithm algo = createAlgorithm(data);
+			Path path = algo.run().getPath();
 			
 			// Test d'empty
 			assertFalse(path.isEmpty());
@@ -184,7 +185,7 @@ public abstract class ShortestAlgosTest {
         // On fait un algo sur chaque partie 
         // On concatene les 2 résultats, ils doivent être >= à celui du full
         // On répète l'opération 10x pour être sûr
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 10; i++) {
         	Node intermediaire = data.getGraph().get(rand.nextInt(data.getGraph().size()));
         	while (intermediaire.equals(origin) || intermediaire.equals(destination))
         		intermediaire = data.getGraph().get(rand.nextInt(data.getGraph().size()));
